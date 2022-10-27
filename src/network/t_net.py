@@ -1,9 +1,8 @@
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
-
 from src.network.layers import conv_bn, dense_bn
-from src.orthogonal_regularizer import OrthogonalRegularizer
+from src.network.orthogonal_regularizer import OrthogonalRegularizer
 
 
 def get_t_net(inputs, num_features):

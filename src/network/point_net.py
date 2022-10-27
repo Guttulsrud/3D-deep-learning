@@ -4,6 +4,15 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from config import config
 
+"""
+PointNet consists of two core components. The primary MLP network, and the transformer
+net (T-net). The T-net aims to learn an affine transformation matrix by its own mini
+network. The T-net is used twice. The first time to transform the input features (n, 3)
+into a canonical representation. The second is an affine transformation for alignment in
+feature space (n, 3). As per the original paper we constrain the transformation to be
+close to an orthogonal matrix (i.e. ||X*X^T - I|| = 0).
+"""
+
 
 def get_point_net_model():
     """

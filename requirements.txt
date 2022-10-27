@@ -1,2 +1,6 @@
-medmnist
-k3d
+trimesh
+tensorflow
+matplotlib
+tensorflow-datasets
+# tensorflow-graphics
+pyglet

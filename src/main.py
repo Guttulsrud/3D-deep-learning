@@ -30,13 +30,9 @@ for item in lst:
             test_labels = data[item]
 
 for image, label in zip(train_images, train_labels):
-    fig = plt.figure(figsize=(9, 6))
-    ax = plt.axes(projection='3d')
-    # Visualize 3D scatter plot
-    ax.scatter3D(image[0], image[1], image[2])
-    # Give labels
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
+
+    plt.imshow(image)
     plt.show()
+    print('e+')
+
     exit()

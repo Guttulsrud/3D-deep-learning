@@ -12,6 +12,7 @@ feature space (n, 3). As per the original paper we constrain the transformation 
 close to an orthogonal matrix (i.e. ||X*X^T - I|| = 0).
 """
 
+
 class OrthogonalRegularizer(keras.regularizers.Regularizer, ABC):
     def __init__(self, num_features, l2reg=0.001):
         self.num_features = num_features

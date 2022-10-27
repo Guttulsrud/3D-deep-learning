@@ -4,3 +4,4 @@ matplotlib
 tensorflow-datasets
 # tensorflow-graphics
 pyglet
+pyyaml

@@ -11,14 +11,14 @@ from src.augmentation import augment
 
 tf.random.set_seed(config['random_seed'])
 
-DATA_DIR = 'data/ModelNet10'
+DATA_DIR = config['data_dir']
 NUM_POINTS = config['number_of_points']
 NUM_CLASSES = config['number_of_classes']
 BATCH_SIZE = config['batch_size']
 
 
 def dataset_sample():
-    mesh = trimesh.load(os.path.join(DATA_DIR, "chair/train/chair_0001.off"))
+    mesh = trimesh.load(f'../{DATA_DIR}/chair/train/chair_0001.off')
     mesh.show()
     points = mesh.sample(NUM_POINTS)
     fig = plt.figure(figsize=(5, 5))

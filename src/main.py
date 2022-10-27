@@ -5,8 +5,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers
 from matplotlib import pyplot as plt
-
-from src.network import get_model
+from config import config
+from src.network.point_net import get_point_net_model
 
 """
 Title: Point cloud classification with PointNet
@@ -104,9 +104,10 @@ Set the number of points to sample and batch size and parse the dataset. This ca
 ~5minutes to complete.
 """
 
-NUM_POINTS = 2048
-NUM_CLASSES = 10
-BATCH_SIZE = 32
+NUM_POINTS = config['number_of_points']
+NUM_CLASSES = config['number_of_classes']
+BATCH_SIZE = config['batch_size']
+epochs = config['epochs']
 
 train_points, test_points, train_labels, test_labels, CLASS_MAP = parse_dataset(
     NUM_POINTS
@@ -135,8 +136,8 @@ train_dataset = train_dataset.shuffle(len(train_points)).map(augment).batch(BATC
 test_dataset = test_dataset.shuffle(len(test_points)).batch(BATCH_SIZE)
 
 
-model = get_model(NUM_POINTS, NUM_CLASSES)
-model.fit(train_dataset, epochs=20, validation_data=test_dataset)
+model = get_point_net_model()
+model.fit(train_dataset, epochs=epochs, validation_data=test_dataset)
 
 """
 ## Visualize predictions

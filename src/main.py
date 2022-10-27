@@ -134,11 +134,6 @@ test_dataset = tf.data.Dataset.from_tensor_slices((test_points, test_labels))
 train_dataset = train_dataset.shuffle(len(train_points)).map(augment).batch(BATCH_SIZE)
 test_dataset = test_dataset.shuffle(len(test_points)).batch(BATCH_SIZE)
 
-"""
-### Build a model
-Each convolution and fully-connected layer (with exception for end layers) consits of
-Convolution / Dense -> Batch Normalization -> ReLU Activation.
-"""
 
 model = get_model(NUM_POINTS, NUM_CLASSES)
 model.fit(train_dataset, epochs=20, validation_data=test_dataset)

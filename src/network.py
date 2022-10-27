@@ -3,8 +3,22 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 from src.orthogonal_regularizer import OrthogonalRegularizer
+"""
+The main network can be then implemented in the same manner where the t-net mini models
+can be dropped in a layers in the graph. Here we replicate the network architecture
+published in the original paper but with half the number of weights at each layer as we
+are using the smaller 10 class ModelNet dataset.
+"""
 
 
+"""
+PointNet consists of two core components. The primary MLP network, and the transformer
+net (T-net). The T-net aims to learn an affine transformation matrix by its own mini
+network. The T-net is used twice. The first time to transform the input features (n, 3)
+into a canonical representation. The second is an affine transformation for alignment in
+feature space (n, 3). As per the original paper we constrain the transformation to be
+close to an orthogonal matrix (i.e. ||X*X^T - I|| = 0).
+"""
 def tnet(inputs, num_features):
     # Initalise bias as the indentity matrix
     bias = keras.initializers.Constant(np.eye(num_features).flatten())
@@ -27,15 +41,15 @@ def tnet(inputs, num_features):
     return layers.Dot(axes=(2, 1))([inputs, feat_T])
 
 
-"""
-The main network can be then implemented in the same manner where the t-net mini models
-can be dropped in a layers in the graph. Here we replicate the network architecture
-published in the original paper but with half the number of weights at each layer as we
-are using the smaller 10 class ModelNet dataset.
-"""
 
 
 def get_model(number_of_points: int, number_of_classes: int):
+    """
+    ### Build a model
+    Each convolution and fully-connected layer (with exception for end layers) consits of
+    Convolution / Dense -> Batch Normalization -> ReLU Activation.
+    """
+
     inputs = keras.Input(shape=(number_of_points, 3))
 
     x = tnet(inputs, 3)

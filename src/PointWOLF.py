@@ -54,7 +54,7 @@ class PointWOLF(object):
 
         return pos.astype('float32'), pos_new.astype('float32')
 
-    def translate_pointcloud(self,pointcloud):
+    def translate_pointcloud(self, pointcloud):
         xyz1 = np.random.uniform(low=2. / 3., high=3. / 2., size=[3])
         xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
 
@@ -62,6 +62,8 @@ class PointWOLF(object):
         return translated_pointcloud
 
     def augment_parallel(self, pos, label):
+
+        np.random.shuffle(pos)
 
         M = self.num_anchor  # (Mx3)
         N, _ = pos.shape  # (N)

@@ -25,8 +25,6 @@ class ShapeNetDataLoader:
         self.pwolf = PointWOLF(args)
         print(args)
 
-
-
     def get_train_data(self):
         data_set = Shapenet.load(split='train', download_and_prepare_kwargs={
             'download_config': tfds.download.DownloadConfig(manual_dir=config['data_dir'])})
@@ -54,7 +52,6 @@ class ShapeNetDataLoader:
             ax.set_axis_off()
             plt.show()
 
-
 if __name__ == "__main__":
 
     sn = ShapeNetDataLoader()
@@ -64,4 +61,3 @@ if __name__ == "__main__":
     for i in ex.take(1):
         print(f'Label {i[1]}')
         sn.plot_pointcloud(i[0])
-

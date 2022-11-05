@@ -1,3 +1,5 @@
+import datetime
+
 import tensorflow as tf
 import matplotlib
 import keras_tuner as kt
@@ -13,18 +15,35 @@ matplotlib.use('TkAgg')
 if __name__ == "__main__":
     train_dataset, test_dataset, CLASS_MAP = get_dataset()
 
+    log_dir = "logs/" + datetime.datetime.now().strftime("%m%d-%H%M")
+
+    hist_callback = tf.keras.callbacks.TensorBoard(
+        log_dir=log_dir,
+        histogram_freq=1,
+        embeddings_freq=1,
+        write_graph=True,
+        update_freq='batch')
+
     tuner = kt.BayesianOptimization(get_point_net_model,
-                                    objective='val_accuracy')
+                                    objective='sparse_categorical_accuracy', )
 
-    stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+    stop_early = tf.keras.callbacks.EarlyStopping(monitor='sparse_categorical_accuracy', patience=config['patience'])
 
-    tuner.search(train_dataset, epochs=50, validation_split=0.2, callbacks=[stop_early])
+    tuner.search(train_dataset, epochs=50, callbacks=[stop_early, hist_callback])
 
-    # Get the optimal hyperparameters
-    best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+    best_hps = tuner.get_best_hyperparameters(num_trials=config['trials'])[0]
 
-    print(f"""
-        The hyperparameter search is complete. The optimal number of units in the first densely-connected
-        layer is {best_hps.get('units')} and the optimal learning rate for the optimizer
-        is {best_hps.get('learning_rate')}.
-    """)
+    model = tuner.hypermodel.build(best_hps)
+    history = model.fit(train_dataset, epochs=50)
+
+    val_acc_per_epoch = history.history['sparse_categorical_accuracy']
+    best_epoch = val_acc_per_epoch.index(max(val_acc_per_epoch)) + 1
+    print('Best epoch: %d' % (best_epoch,))
+
+    hypermodel = tuner.hypermodel.build(best_hps)
+
+    # Retrain the model
+    hypermodel.fit(train_dataset, epochs=best_epoch)
+
+    eval_result = hypermodel.evaluate(test_dataset)
+    print("[test loss, test accuracy]:", eval_result)

@@ -1,9 +1,11 @@
 number_of_points: 2048
-number_of_classes: 10
+number_of_classes: 2
 batch_size: 32
 epochs: 20
 random_seed: 42
 data_dir: '../data/ModelNet10'
+patience: 10
+trials: 2
 network:
   learning_rate: 0.001
 

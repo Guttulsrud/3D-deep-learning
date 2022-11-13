@@ -21,9 +21,9 @@ def dataset_sample():
     plt.show()
 
 
-def parse_dataset(num_points, load_file=False):
+def parse_dataset(num_points, load_file=None):
     if load_file:
-        f = open('data.json')
+        f = open(load_file)
         result = json.load(f)
         class_map = {int(k): v for k, v in result['class_map'].items()}
 
@@ -65,7 +65,9 @@ def parse_dataset(num_points, load_file=False):
         'test_labels': np.array(test_labels).tolist(),
         'class_map': class_map
     }
-    with open("data.json", "w") as outfile:
+    dataset = config['data_dir'].split('data/')[1]
+
+    with open(f'{dataset}.json', "w") as outfile:
         outfile.write(json.dumps(result))
 
     return (
@@ -77,7 +79,7 @@ def parse_dataset(num_points, load_file=False):
     )
 
 
-def get_dataset(load_file):
+def get_dataset(load_file=None):
     train_points, test_points, train_labels, test_labels, CLASS_MAP = parse_dataset(
         config['number_of_points'], load_file=load_file
     )

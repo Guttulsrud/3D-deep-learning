@@ -80,6 +80,9 @@ def parse_dataset(num_points, load_file=None):
 
 
 def get_dataset(load_file=None):
+    if load_file and not os.path.exists(load_file):
+        raise Exception(f'{load_file} not found!')
+
     train_points, test_points, train_labels, test_labels, CLASS_MAP = parse_dataset(
         config['number_of_points'], load_file=load_file
     )

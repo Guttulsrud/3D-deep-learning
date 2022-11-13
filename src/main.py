@@ -12,7 +12,8 @@ tf.random.set_seed(config['random_seed'])
 matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
-    train_dataset, test_dataset, CLASS_MAP = get_dataset(load_file='ModelNet10.json')
+    train_dataset, test_dataset, CLASS_MAP = get_dataset()
+    # train_dataset, test_dataset, CLASS_MAP = get_dataset(load_file='model_net_40.json')
     model = get_point_net_model()
     results = model.fit(train_dataset, epochs=config['epochs'], validation_data=test_dataset)
     save_results(results.history)

@@ -12,6 +12,7 @@ matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
     train_dataset, test_dataset, CLASS_MAP = get_dataset(load_file=True)
+
     # print(train_dataset)
     # dl = ShapeNetDataLoader()
     # train_dataset = dl.get_train_data()

@@ -25,14 +25,15 @@ def parse_dataset(num_points, load_file=False):
     if load_file:
         f = open('data.json')
         result = json.load(f)
+        class_map = {int(k): v for k, v in result['class_map'].items()}
+
         return (
             np.array(result['train_points']),
             np.array(result['test_points']),
             np.array(result['train_labels']),
             np.array(result['test_labels']),
-            result['class_map'],
+            class_map,
         )
-
 
     train_points = []
     train_labels = []

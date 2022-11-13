@@ -2,6 +2,7 @@ trimesh
 tensorflow
 matplotlib
 tensorflow-datasets
+pipwin
 tensorflow-graphics
 pyglet
 pyyaml

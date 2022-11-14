@@ -11,11 +11,9 @@ tf.random.set_seed(config['random_seed'])
 matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
+    train_dataset, test_dataset, CLASS_MAP = get_dataset(load_file=config['data_dir'], pointwolf=False)
+
     # Find optimal hyperparameters
-    train_dataset, test_dataset, CLASS_MAP = get_dataset(config['data_dir'])
-
-    log_dir = "logs/" + datetime.datetime.now().strftime("%m%d-%H%M")
-
     tuner = kt.BayesianOptimization(get_point_net_model, objective='sparse_categorical_accuracy')
 
     tuner.search(train_dataset, epochs=config['epochs'], callbacks=initialize_callbacks())

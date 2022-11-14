@@ -4,13 +4,14 @@ learning_rate: 0.001
 batch_size: 32
 epochs: 30
 random_seed: 42
-data_dir: '../data/ModelNet40'
+data_dir: '../data/data.json'
 patience: 10
 trials: 2
 network:
   learning_rate: 0.001
 hpo:
+  enabled: False
   dropout1: [0.1, 0.2, 0.3, 0.4, 0.5]
   dropout2: [0.1, 0.2, 0.3, 0.4, 0.5]
-  activation: ['relu', 'leaky relu', 'swish']
+  activation: ['relu', 'swish']
   batch_size: [32, 64, 128, 256, 512]

@@ -6,3 +6,4 @@ pipwin
 tensorflow-graphics
 pyglet
 pyyaml
+keras_tuner

@@ -5,7 +5,7 @@ import keras_tuner as kt
 from config import config
 from src.data_loader import get_dataset
 from src.network import get_point_net_model
-from src.utils import initialize_callbacks
+from src.utils import initialize_callbacks, save_results
 
 tf.random.set_seed(config['random_seed'])
 matplotlib.use('TkAgg')
@@ -13,6 +13,8 @@ matplotlib.use('TkAgg')
 if __name__ == "__main__":
     # Find optimal hyperparameters
     train_dataset, test_dataset, CLASS_MAP = get_dataset(config['data_dir'])
+
+    log_dir = "logs/" + datetime.datetime.now().strftime("%m%d-%H%M")
 
     tuner = kt.BayesianOptimization(get_point_net_model, objective='sparse_categorical_accuracy')
 

@@ -8,6 +8,8 @@ from config import config
 from src.data_loader import get_dataset
 from src.evaluation import show_performance
 from src.network import get_point_net_model
+from src.shapenet_dataloader import ShapeNetDataLoader
+from src.utils import save_results
 
 tf.random.set_seed(config['random_seed'])
 matplotlib.use('TkAgg')

@@ -4,6 +4,7 @@ import trimesh
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import json
 
 from src.augmentation import augment
 from config import config
@@ -20,7 +21,20 @@ def dataset_sample():
     plt.show()
 
 
-def parse_dataset(num_points):
+def parse_dataset(num_points, load_file=None):
+    if load_file:
+        f = open(load_file)
+        result = json.load(f)
+        class_map = {int(k): v for k, v in result['class_map'].items()}
+
+        return (
+            np.array(result['train_points']),
+            np.array(result['test_points']),
+            np.array(result['train_labels']),
+            np.array(result['test_labels']),
+            class_map,
+        )
+
     train_points = []
     train_labels = []
     test_points = []
@@ -44,29 +58,43 @@ def parse_dataset(num_points):
             test_points.append(trimesh.load(f).sample(num_points))
             test_labels.append(i)
 
+    result = {
+        'train_points': np.array(train_points).tolist(),
+        'test_points': np.array(test_points).tolist(),
+        'train_labels': np.array(train_labels).tolist(),
+        'test_labels': np.array(test_labels).tolist(),
+        'class_map': class_map
+    }
+    dataset = config['data_dir'].split('data/')[1]
+
+    with open(f'{dataset}.json', "w") as outfile:
+        outfile.write(json.dumps(result))
+
     return (
-        np.array(train_points),
-        np.array(test_points),
-        np.array(train_labels),
-        np.array(test_labels),
-        class_map,
+        np.array(result['train_points']),
+        np.array(result['test_points']),
+        np.array(result['train_labels']),
+        np.array(result['test_labels']),
+        result['class_map'],
     )
 
 
-def get_dataset():
+def get_dataset(load_file=None):
+    if load_file and not os.path.exists(load_file):
+        raise Exception(f'{load_file} not found!')
+
     train_points, test_points, train_labels, test_labels, CLASS_MAP = parse_dataset(
-        config['number_of_points']
+        config['number_of_points'], load_file=load_file
     )
 
     train_dataset = tf.data.Dataset.from_tensor_slices((train_points, train_labels))
     test_dataset = tf.data.Dataset.from_tensor_slices((test_points, test_labels))
-
-    train_dataset = train_dataset\
-        .shuffle(len(train_points))\
-        .map(augment)\
+    train_dataset = train_dataset \
+        .shuffle(len(train_points)) \
+        .map(augment) \
         .batch(config['batch_size'])
-    test_dataset = test_dataset\
-        .shuffle(len(test_points))\
+    test_dataset = test_dataset \
+        .shuffle(len(test_points)) \
         .batch(config['batch_size'])
 
     return train_dataset, test_dataset, CLASS_MAP

@@ -72,24 +72,22 @@ class PointWOLF(object):
             idx = np.random.choice(N, M)  # (M)
         elif self.sample_type == 'fps':
             idx = self.fps(pos, M)  # (M)
-
         pos_anchor = pos[idx]  # (M,3), anchor point
-
         pos_repeat = np.expand_dims(pos, 0).repeat(M, axis=0)  # (M,N,3)
         pos_normalize = np.zeros_like(pos_repeat, dtype=pos.dtype)  # (M,N,3)
-
         # Move to canonical space
         pos_normalize = pos_repeat - pos_anchor.reshape(M, -1, 3)
-
         # Local transformation at anchor point
         pos_transformed = self.local_transformaton(pos_normalize)  # (M,N,3)
 
         # Move to origin space
         pos_transformed = pos_transformed + pos_anchor.reshape(M, -1, 3)  # (M,N,3)
+        #print(pos_transformed)
 
         pos_new = self.kernel_regression(pos, pos_anchor, pos_transformed)
-        pos_new = self.normalize(pos_new)
+        #print(pos_new)
 
+        pos_new = self.normalize(pos_new)
         pos_new = self.translate_pointcloud(pos_new.astype('float32'))
 
         return pos_new, label
@@ -108,19 +106,21 @@ class PointWOLF(object):
 
         # Distance between anchor points & entire points
         sub = np.expand_dims(pos_anchor, 1).repeat(N, axis=1) - np.expand_dims(pos, 0).repeat(M, axis=0)  # (M,N,3), d
-
         project_axis = self.get_random_axis(1)
-
         projection = np.expand_dims(project_axis, axis=1) * np.eye(3)  # (1,3,3)
+
 
         # Project distance
         sub = sub @ projection  # (M,N,3)
-        sub = np.sqrt(((sub) ** 2).sum(2))  # (M,N)
-
+        sub = np.sqrt(((sub) ** 2).sum(2), dtype=np.float64)  # (M,N)
         # Kernel regression
-        weight = np.exp(-0.5 * (sub ** 2) / (self.sigma ** 2))  # (M,N)
+        weight = np.exp(-0.5 * (sub ** 2) / (self.sigma ** 2), dtype=np.float64)  # (M,N)
+        m = np.median(weight[weight > 0])
+        # Assign the median to the zero elements
+        weight[weight == 0] = m
         pos_new = (np.expand_dims(weight, 2).repeat(3, axis=-1) * pos_transformed).sum(0)  # (N,3)
         pos_new = (pos_new / weight.sum(0, keepdims=True).T)  # normalize by weight
+
         return pos_new
 
     def fps(self, pos, npoint):

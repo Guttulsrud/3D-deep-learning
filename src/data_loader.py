@@ -106,14 +106,16 @@ def get_dataset(load_file=None, pointwolf=False):
     if pointwolf:
         train_dataset = train_dataset \
             .shuffle(len(train_points)) \
+            .map(augment)\
             .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int64])) \
-            .map(lambda x, y: set_shapes(x, y, [2048, 3])) \
+            .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3])) \
             .batch(config['batch_size'])
     else:
         train_dataset = train_dataset \
-            .shuffle(len(train_points)).map(augment) \
+            .shuffle(len(train_points))\
+            .map(augment) \
             .batch(config['batch_size']
-                   )
+        )
 
     test_dataset = test_dataset \
         .shuffle(len(test_points)) \

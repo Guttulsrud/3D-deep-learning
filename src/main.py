@@ -12,18 +12,20 @@ tf.random.set_seed(config['random_seed'])
 matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
-    train_dataset, test_dataset, CLASS_MAP = get_dataset(pointwolf=False)
+    train_dataset, test_dataset, CLASS_MAP = get_dataset(pointwolf=False, load_file='ModelNet32.json')
 
     hpo_enabled = config['hpo']['enabled']
     if hpo_enabled:
         print('Run with HPO')
         # Find optimal hyperparameters
-        tuner = kt.BayesianOptimization(get_point_net_model, objective='sparse_categorical_accuracy')
+        tuner = kt.BayesianOptimization(get_point_net_model,
+                                        objective='sparse_categorical_accuracy',
+                                        max_trials=config['trials'])
         print('Run search')
         tuner.search(train_dataset, epochs=config['epochs'], callbacks=initialize_callbacks())
         print('Find best HP')
 
-        best_hps = tuner.get_best_hyperparameters(num_trials=config['trials'])[0]
+        best_hps = tuner.get_best_hyperparameters()[0]
 
         # Train the model with the optimal hyperparameters
         print('Train the model with the optimal hyperparameters')

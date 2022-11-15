@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import json
 from PointWOLF import PointWOLF
 from config import config
+from src.augmentation import augment
 
 
 def dataset_sample():
@@ -41,7 +42,8 @@ def parse_dataset(num_points, load_file=None):
     class_map = {}
     folders = glob.glob(os.path.join(config['data_dir'], "[!README]*"))
 
-    for i, folder in enumerate(folders):
+    for i, folder in enumerate(os.listdir(config['data_dir'])):
+        folder = f'../data/ModelNet40/{folder}'
         print("processing class: {}".format(os.path.basename(folder)))
         # store folder name with ID so we can retrieve later
         class_map[i] = folder.split("/")[-1]
@@ -64,9 +66,8 @@ def parse_dataset(num_points, load_file=None):
         'test_labels': np.array(test_labels).tolist(),
         'class_map': class_map
     }
-    dataset = config['data_dir'].split('data/')[1]
 
-    with open(f'{dataset}.json', "w") as outfile:
+    with open(f'ModelNetX.json', "w") as outfile:
         outfile.write(json.dumps(result))
 
     return (
@@ -105,13 +106,14 @@ def get_dataset(load_file=None, pointwolf=False):
     if pointwolf:
         train_dataset = train_dataset \
             .shuffle(len(train_points)) \
-            .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int32])) \
+            .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int64])) \
             .map(lambda x, y: set_shapes(x, y, [2048, 3])) \
             .batch(config['batch_size'])
     else:
         train_dataset = train_dataset \
-            .shuffle(len(train_points)) \
-            .batch(config['batch_size'])
+            .shuffle(len(train_points)).map(augment) \
+            .batch(config['batch_size']
+                   )
 
     test_dataset = test_dataset \
         .shuffle(len(test_points)) \

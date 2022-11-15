@@ -6,7 +6,7 @@ from config import config
 from src.orthogonal_regularizer import OrthogonalRegularizer
 
 
-def get_point_net_model(hp):
+def get_point_net_model(hp=None):
     hpo_enabled = config['hpo']['enabled']
     number_of_points = config['number_of_points']
     number_of_classes = config['number_of_classes']
@@ -69,10 +69,10 @@ def get_t_net(inputs, num_features):
 
 def conv_bn(x, filters, hp_name=None, hp=None):
     hpo_enabled = config['hpo']['enabled']
-    if hpo_enabled:
+    if hpo_enabled and hp:
         filters = hp.Int(f'units_{hp_name}', min_value=filters, max_value=filters * 2, step=32)
 
-    activation = hp.Choice(f'activation_{hp_name}', values=config['hpo']['activation']) if hpo_enabled else 'relu'
+    activation = hp.Choice(f'activation_{hp_name}', values=config['hpo']['activation']) if hpo_enabled and hp else 'relu'
 
     x = layers.Conv1D(filters, kernel_size=1, padding="valid")(x)
     x = layers.BatchNormalization(momentum=0.0)(x)
@@ -82,10 +82,10 @@ def conv_bn(x, filters, hp_name=None, hp=None):
 
 def dense_bn(x, filters, hp_name=None, hp=None):
     hpo_enabled = config['hpo']['enabled']
-    if hpo_enabled:
+    if hpo_enabled and hp:
         filters = hp.Int(f'units_{hp_name}', min_value=filters, max_value=filters * 2, step=32)
 
-    activation = hp.Choice(f'activation_{hp_name}', values=config['hpo']['activation']) if hpo_enabled else 'relu'
+    activation = hp.Choice(f'activation_{hp_name}', values=config['hpo']['activation']) if hpo_enabled and hp else 'relu'
 
     x = layers.Dense(filters)(x)
     x = layers.BatchNormalization(momentum=0.0)(x)

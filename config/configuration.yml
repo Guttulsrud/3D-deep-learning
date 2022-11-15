@@ -1,12 +1,12 @@
-number_of_points: 2048
+number_of_points: 1024
 number_of_classes: 40
 learning_rate: 0.001
-batch_size: 32
+batch_size: 2
 epochs: 30
 random_seed: 42
-data_dir: '../data/data.json'
+data_dir: '../data/ModelNet40'
 patience: 10
-trials: 2
+trials: 5
 network:
   learning_rate: 0.001
 hpo:

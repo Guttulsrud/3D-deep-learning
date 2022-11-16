@@ -2,7 +2,7 @@ number_of_points: 1024
 number_of_classes: 40
 learning_rate: 0.001
 batch_size: 2
-epochs: 30
+epochs: 2
 random_seed: 42
 data_dir: '../data/ModelNet40'
 patience: 10
@@ -11,8 +11,8 @@ network:
   learning_rate: 0.001
 
 augmentations:
-  pointwolf: False
-  jitter: False
+  pointwolf: True
+  jitter: True
 hpo:
   enabled: False
   dropout1: [0.1, 0.2, 0.3, 0.4, 0.5]

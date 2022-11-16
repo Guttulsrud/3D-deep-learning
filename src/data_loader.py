@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import json
 from PointWOLF import PointWOLF
 from config import config
-from src.augmentation import jitter
+from src.augmentation import jitter, jitter_point_cloud, rotate_point_cloud
 
 
 def dataset_sample():
@@ -105,18 +105,22 @@ def get_dataset(load_file=None):
     test_dataset = tf.data.Dataset.from_tensor_slices((test_points, test_labels))
 
     point_wolf_enabled = config['augmentations']['pointwolf']
-    jitter_enabled = config['augmentations']['jitter']
 
     train_dataset = train_dataset.shuffle(len(train_points))
 
-    if jitter_enabled:
-        train_dataset = train_dataset.map(jitter)
+    train_dataset = train_dataset \
+        .map(lambda x, y: tf.numpy_function(func=rotate_point_cloud, inp=[x, y], Tout=[tf.float64, tf.int32])) \
+        .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3]))
+
+    train_dataset = train_dataset \
+        .map(lambda x, y: tf.numpy_function(func=jitter_point_cloud, inp=[x, y], Tout=[tf.float64, tf.int32])) \
+        .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3]))
 
     if point_wolf_enabled:
         pwolf = PointWOLF(args)
 
         train_dataset = train_dataset \
-            .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int64])) \
+            .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int32])) \
             .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3]))
 
     train_dataset = train_dataset.batch(config['batch_size'])

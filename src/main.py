@@ -12,11 +12,11 @@ tf.random.set_seed(config['random_seed'])
 # matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
-    info = 'No HPO. Vanilla PointNet jittering'
+    info = f'{"no" if not config["hpo"]["enabled"] else ""} HPO. Vanilla PointNet jittering'
     # This makes it easier to look at run logs!
     print(info)
 
-    train_dataset, test_dataset, CLASS_MAP = get_dataset()
+    train_dataset, test_dataset, CLASS_MAP = get_dataset(load_file='ModelNetX.json')
 
     hpo_enabled = config['hpo']['enabled']
     if hpo_enabled:
@@ -26,7 +26,7 @@ if __name__ == "__main__":
                                         objective='sparse_categorical_accuracy',
                                         max_trials=config['trials'])
         print('Run search')
-        tuner.search(train_dataset, epochs=config['epochs'], callbacks=initialize_callbacks())
+        tuner.search(train_dataset, epochs=config['epochs'], callbacks=initialize_callbacks(), validation_data=test_dataset)
         print('Find best HP')
 
         best_hps = tuner.get_best_hyperparameters()[0]
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         stop_early = tf.keras.callbacks.EarlyStopping(monitor='sparse_categorical_accuracy',
                                                       patience=config['patience'])
         lr_scheduler = LearningRateScheduler(decay_schedule)
-        history = model.fit(train_dataset, epochs=config['epochs'], callbacks=[stop_early, lr_scheduler])
+        history = model.fit(train_dataset, epochs=config['epochs'], callbacks=initialize_callbacks())
 
         val_acc_per_epoch = history.history['sparse_categorical_accuracy']
         best_epoch = val_acc_per_epoch.index(max(val_acc_per_epoch)) + 1

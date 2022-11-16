@@ -32,10 +32,10 @@ def get_point_net_model(hp=None):
     else:
         x = layers.Dropout(0.3)(x)
 
-    outputs = layers.Dense(number_of_classes, activation="softmax", kernel_regularizer=regularizers.L1(0.01))(x)
+    outputs = layers.Dense(number_of_classes, activation="softmax")(x)
 
     model = keras.Model(inputs=inputs, outputs=outputs, name="pointnet")
-    model.summary()
+    # model.summary()
 
     model.compile(
         loss="sparse_categorical_crossentropy",

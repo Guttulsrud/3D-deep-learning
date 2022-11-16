@@ -14,7 +14,7 @@ close to an orthogonal matrix (i.e. ||X*X^T - I|| = 0).
 
 
 class OrthogonalRegularizer(keras.regularizers.Regularizer, ABC):
-    def __init__(self, num_features, l2reg=0.001):
+    def __init__(self, num_features, l2reg=0.0005):
         self.num_features = num_features
         self.l2reg = l2reg
         self.eye = tf.eye(num_features)

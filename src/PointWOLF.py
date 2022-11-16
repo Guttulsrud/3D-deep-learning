@@ -63,7 +63,7 @@ class PointWOLF(object):
 
     def augment_parallel(self, pos, label):
 
-        np.random.shuffle(pos)
+        # np.random.shuffle(pos)
 
         M = self.num_anchor  # (Mx3)
         N, _ = pos.shape  # (N)

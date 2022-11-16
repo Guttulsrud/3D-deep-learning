@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # This makes it easier to look at run logs!
     print(info)
 
-    train_dataset, test_dataset, CLASS_MAP = get_dataset(pointwolf=False)
+    train_dataset, test_dataset, CLASS_MAP = get_dataset()
 
     hpo_enabled = config['hpo']['enabled']
     if hpo_enabled:

@@ -9,6 +9,10 @@ patience: 10
 trials: 5
 network:
   learning_rate: 0.001
+
+augmentations:
+  pointwolf: False
+  jitter: False
 hpo:
   enabled: False
   dropout1: [0.1, 0.2, 0.3, 0.4, 0.5]

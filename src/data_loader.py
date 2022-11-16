@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import json
 from PointWOLF import PointWOLF
 from config import config
-from src.augmentation import augment
+from src.augmentation import jitter
 
 
 def dataset_sample():
@@ -78,23 +78,24 @@ def parse_dataset(num_points, load_file=None):
         result['class_map'],
     )
 
-args = {'w_num_anchor':1,
-        'w_sample_type':'fps',
-        'w_sigma':0.5,
-        'w_R_range':10,
-        'w_S_range':3,
-        'w_T_range':0.25}
+
+args = {'w_num_anchor': 1,
+        'w_sample_type': 'fps',
+        'w_sigma': 0.5,
+        'w_R_range': 10,
+        'w_S_range': 3,
+        'w_T_range': 0.25}
+
 
 def set_shapes(img, label, img_shape):
     img.set_shape(img_shape)
     label.set_shape([])
     return img, label
 
-def get_dataset(load_file=None, pointwolf=False):
+
+def get_dataset(load_file=None):
     if load_file and not os.path.exists(load_file):
         raise Exception(f'{load_file} not found!')
-
-    pwolf = PointWOLF(args)
 
     train_points, test_points, train_labels, test_labels, CLASS_MAP = parse_dataset(
         config['number_of_points'], load_file=load_file
@@ -103,19 +104,22 @@ def get_dataset(load_file=None, pointwolf=False):
     train_dataset = tf.data.Dataset.from_tensor_slices((train_points, train_labels))
     test_dataset = tf.data.Dataset.from_tensor_slices((test_points, test_labels))
 
-    if pointwolf:
+    point_wolf_enabled = config['augmentations']['pointwolf']
+    jitter_enabled = config['augmentations']['jitter']
+
+    train_dataset = train_dataset.shuffle(len(train_points))
+
+    if jitter_enabled:
+        train_dataset = train_dataset.map(jitter)
+
+    if point_wolf_enabled:
+        pwolf = PointWOLF(args)
+
         train_dataset = train_dataset \
-            .shuffle(len(train_points)) \
-            .map(augment)\
             .map(lambda x, y: tf.numpy_function(func=pwolf.augment_parallel, inp=[x, y], Tout=[tf.float32, tf.int64])) \
-            .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3])) \
-            .batch(config['batch_size'])
-    else:
-        train_dataset = train_dataset \
-            .shuffle(len(train_points))\
-            .map(augment) \
-            .batch(config['batch_size']
-        )
+            .map(lambda x, y: set_shapes(x, y, [config['number_of_points'], 3]))
+
+    train_dataset = train_dataset.batch(config['batch_size'])
 
     test_dataset = test_dataset \
         .shuffle(len(test_points)) \

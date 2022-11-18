@@ -11,6 +11,7 @@ from src.augmentation import jitter, jitter_point_cloud, rotate_point_cloud
 
 
 def dataset_sample():
+    # Show a sample of the data
     mesh = trimesh.load(f'../{config["data_dir"]}/chair/train/chair_0001.off')
     mesh.show()
     points = mesh.sample(config['number_of_points'])

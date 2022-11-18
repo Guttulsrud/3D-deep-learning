@@ -3,6 +3,9 @@ from matplotlib import pyplot as plt
 
 
 def show_performance(test_dataset, model, CLASS_MAP):
+    """
+    Old function to evaluate the performance, unused
+    """
     data = test_dataset.take(1)
     points, labels = list(data)[0]
     points = points[:8, ...]

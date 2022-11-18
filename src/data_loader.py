@@ -23,6 +23,9 @@ def dataset_sample():
 
 
 def parse_dataset(num_points, load_file=None):
+    """
+    Reads dataset (pre-build or original) and creates train and test lists with labels
+    """
     if load_file:
         f = open(load_file)
         result = json.load(f)
@@ -41,7 +44,6 @@ def parse_dataset(num_points, load_file=None):
     test_points = []
     test_labels = []
     class_map = {}
-    folders = glob.glob(os.path.join(config['data_dir'], "[!README]*"))
 
     for i, folder in enumerate(os.listdir(config['data_dir'])):
         folder = f'../data/ModelNet40/{folder}'
@@ -89,12 +91,18 @@ args = {'w_num_anchor': 1,
 
 
 def set_shapes(img, label, img_shape):
+    """
+    Sets the shape of the model and label after losing it due to tf.numpy_function
+    """
     img.set_shape(img_shape)
     label.set_shape([])
     return img, label
 
 
 def get_dataset(load_file=None):
+    """
+    Creates tensors for train and test data with the augmentations, shuffling and batching
+    """
     if load_file and not os.path.exists(load_file):
         raise Exception(f'{load_file} not found!')
 

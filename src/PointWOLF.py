@@ -64,7 +64,7 @@ class PointWOLF(object):
     def augment_parallel(self, pos, label):
 
         """
-            __call__ with the addition of translation of pointcouds, which in the original call is 
+            Same function as __call__ with the addition of translation of pointcouds, which in the original call is
             done for each data sample but outside PointWolf.
         """
 
@@ -78,6 +78,7 @@ class PointWOLF(object):
         pos_anchor = pos[idx]  # (M,3), anchor point
         pos_repeat = np.expand_dims(pos, 0).repeat(M, axis=0)  # (M,N,3)
         pos_normalize = np.zeros_like(pos_repeat, dtype=pos.dtype)  # (M,N,3)
+
         # Move to canonical space
         pos_normalize = pos_repeat - pos_anchor.reshape(M, -1, 3)
         # Local transformation at anchor point
@@ -85,10 +86,8 @@ class PointWOLF(object):
 
         # Move to origin space
         pos_transformed = pos_transformed + pos_anchor.reshape(M, -1, 3)  # (M,N,3)
-        #print(pos_transformed)
 
         pos_new = self.kernel_regression(pos, pos_anchor, pos_transformed)
-        #print(pos_new)
 
         pos_new = self.normalize(pos_new)
         pos_new = self.translate_pointcloud(pos_new.astype('float32'))

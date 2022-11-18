@@ -1,5 +1,9 @@
+"""
+#
+# Inspired by https://keras.io/examples/vision/pointnet/
+#
+"""
 from abc import ABC
-
 import tensorflow as tf
 from tensorflow import keras
 

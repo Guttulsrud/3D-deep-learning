@@ -1,10 +1,15 @@
+"""
+#
+# Inspired by https://keras.io/examples/vision/pointnet/
+#
+"""
+
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers, regularizers
 
 from config import config
 from src.orthogonal_regularizer import OrthogonalRegularizer
-
 
 def get_point_net_model(hp=None):
     hpo_enabled = config['hpo']['enabled']
@@ -35,7 +40,6 @@ def get_point_net_model(hp=None):
     outputs = layers.Dense(number_of_classes, activation="softmax")(x)
 
     model = keras.Model(inputs=inputs, outputs=outputs, name="pointnet")
-    # model.summary()
 
     model.compile(
         loss="sparse_categorical_crossentropy",

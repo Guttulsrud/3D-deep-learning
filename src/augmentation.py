@@ -1,25 +1,17 @@
 import numpy as np
-import tensorflow as tf
-
-
-def jitter(points, label):
-    # jitter points
-    # todo: make augmentations optional in the config file and put params in config file
-    points += tf.random.uniform(points.shape, -0.005, 0.005, dtype=tf.float64)
-    return points, label
-
-
 def jitter_point_cloud(batch_data, label, sigma=0.01, clip=0.05):
     """ Randomly jitter points. jittering is per point.
         Input:
           BxNx3 array, original batch of point clouds
         Return:
           BxNx3 array, jittered batch of point clouds
+
+    Unused
     """
     N, C = batch_data.shape
     assert (clip > 0)
     jittered_data = np.clip(sigma * np.random.randn(N, C), -1 * clip, clip)
-    # jittered_data += batch_data
+    jittered_data += batch_data
     return jittered_data, label
 
 
@@ -30,6 +22,7 @@ def rotate_point_cloud(batch_data, label):
           BxNx3 array, original batch of point clouds
         Return:
           BxNx3 array, rotated batch of point clouds
+    Unused
     """
 
     rotation_angle = np.random.uniform() * 2 * np.pi

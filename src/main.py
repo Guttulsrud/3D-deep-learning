@@ -12,7 +12,7 @@ tf.random.set_seed(config['random_seed'])
 # matplotlib.use('TkAgg')
 
 if __name__ == "__main__":
-    info = f'{"no" if not config["hpo"]["enabled"] else ""} HPO. Vanilla PointNet jittering'
+    info = f'{"No" if not config["hpo"]["enabled"] else ""} HPO. PointNet'
     # This makes it easier to look at run logs!
     print(info)
 

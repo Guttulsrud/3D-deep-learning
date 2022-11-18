@@ -63,7 +63,10 @@ class PointWOLF(object):
 
     def augment_parallel(self, pos, label):
 
-        # np.random.shuffle(pos)
+        """
+            __call__ with the addition of translation of pointcouds, which in the original call is 
+            done for each data sample but outside PointWolf.
+        """
 
         M = self.num_anchor  # (Mx3)
         N, _ = pos.shape  # (N)
